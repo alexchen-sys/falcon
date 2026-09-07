@@ -35,19 +35,15 @@ from typing import (
     Union,
 )
 
+# NOTE(vytas): A plain TypeVar on <3.10 is good enough at runtime
+#   (annotations are not evaluated); we deliberately do not bother
+#   with a third-party typing backport.
 if sys.version_info >= (3, 10):
-    from typing import Concatenate as Concatenate
     from typing import ParamSpec as ParamSpec
 
     _P = ParamSpec('_P')
 else:
-    try:
-        from typing_extensions import Concatenate as Concatenate
-        from typing_extensions import ParamSpec as ParamSpec
-
-        _P = ParamSpec('_P')
-    except ImportError:  # pragma: nocover
-        _P = TypeVar('_P')  # type: ignore[assignment]
+    _P = TypeVar('_P')  # type: ignore[assignment]
 
 # NOTE(vytas): Mypy still struggles to handle a conditional import in the EAFP
 #   fashion, so we branch on Py version instead (which it does understand).

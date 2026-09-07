@@ -33,7 +33,7 @@ import inspect
 import os
 import os.path
 import re
-from typing import Any, Callable, cast, overload, TYPE_CHECKING
+from typing import Any, Callable, cast, TYPE_CHECKING
 import unicodedata
 
 from falcon import status_codes
@@ -104,21 +104,11 @@ utcnow: Callable[[], datetime.datetime] = deprecated(
 # NOTE(kgriffs,vytas): This is tested in the PyPy gate but we do not want devs
 #   to have to install PyPy to check coverage on their workstations, so we use
 #   the nocover pragma here.
-@overload
-def _lru_cache_nop(
-    maxsize: Callable[_P, _R_co],
-) -> _LruCacheWrapper[_P, _R_co]: ...  # pragma: nocover
-
-
-@overload
 def _lru_cache_nop(
     maxsize: int | None = 128, typed: bool = False
 ) -> Callable[
     [Callable[_P, _R_co]], _LruCacheWrapper[_P, _R_co]
-]: ...  # pragma: nocover
-
-
-def _lru_cache_nop(maxsize: Any = 128, typed: bool = False) -> Any:  # pragma: nocover
+]:  # pragma: nocover
     def decorator(func: Callable[_P, _R_co]) -> _LruCacheWrapper[_P, _R_co]:
         # NOTE(kgriffs): Partially emulate the lru_cache protocol; only add
         #   cache_info() later if/when it becomes necessary.
@@ -135,18 +125,7 @@ def _lru_cache_nop(maxsize: Any = 128, typed: bool = False) -> Any:  # pragma: n
 # PERF(kgriffs): Using lru_cache is slower on PyPy when the wrapped
 #   function is just doing a few non-IO operations.
 if TYPE_CHECKING:
-
-    @overload
-    def _lru_cache_for_simple_logic(
-        maxsize: Callable[_P, _R_co],
-    ) -> _LruCacheWrapper[_P, _R_co]: ...
-
-    @overload
-    def _lru_cache_for_simple_logic(
-        maxsize: int | None = 128, typed: bool = False
-    ) -> Callable[[Callable[_P, _R_co]], _LruCacheWrapper[_P, _R_co]]: ...
-
-    def _lru_cache_for_simple_logic(maxsize: Any = 128, typed: bool = False) -> Any: ...
+    _lru_cache_for_simple_logic = _lru_cache_nop
 elif PYPY:
     _lru_cache_for_simple_logic = _lru_cache_nop  # pragma: nocover
 else:

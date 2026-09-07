@@ -48,6 +48,7 @@ from falcon._typing import CookieArg
 from falcon._typing import HeaderArg
 from falcon._typing import HeaderIter
 from falcon._typing import HeaderMapping
+from falcon._typing import ResponseStatus
 from falcon.asgi_spec import AsgiEvent
 from falcon.asgi_spec import ScopeType
 from falcon.constants import COMBINED_METHODS
@@ -962,15 +963,9 @@ async def _simulate_request_asgi(
 
         req_event_emitter.disconnect()
         await task_req
-
-        if resp_event_collector.status is None:
-            # NOTE(AlexChen): The app is expected to emit `http.response.start`
-            #   prior to completing the request.
-            raise RuntimeError('The app did not return a response status.')
-
         return Result(
             resp_event_collector.body_chunks,
-            code_to_http_status(resp_event_collector.status),
+            code_to_http_status(cast(ResponseStatus, resp_event_collector.status)),
             resp_event_collector.headers,
         )
 
