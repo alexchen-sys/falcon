@@ -35,7 +35,7 @@ from typing import (
     Union,
 )
 
-# NOTE(vytas): A plain TypeVar on <3.10 is good enough at runtime
+# NOTE(alexchen-sys): A plain TypeVar on <3.10 is good enough at runtime
 #   (annotations are not evaluated); we deliberately do not bother
 #   with a third-party typing backport.
 if sys.version_info >= (3, 10):

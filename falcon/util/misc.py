@@ -106,9 +106,7 @@ utcnow: Callable[[], datetime.datetime] = deprecated(
 #   the nocover pragma here.
 def _lru_cache_nop(
     maxsize: int | None = 128, typed: bool = False
-) -> Callable[
-    [Callable[_P, _R_co]], _LruCacheWrapper[_P, _R_co]
-]:  # pragma: nocover
+) -> Callable[[Callable[_P, _R_co]], _LruCacheWrapper[_P, _R_co]]:  # pragma: nocover
     def decorator(func: Callable[_P, _R_co]) -> _LruCacheWrapper[_P, _R_co]:
         # NOTE(kgriffs): Partially emulate the lru_cache protocol; only add
         #   cache_info() later if/when it becomes necessary.
